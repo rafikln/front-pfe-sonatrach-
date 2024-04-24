@@ -1,31 +1,30 @@
-import  daisyui   from"daisyui"
-/** @type {import('tailwindcss').Config} */
-export default {
+import twElementsReactPlugin from "tw-elements-react";
+const daisyui = require("daisyui");
+const flowbite = require("flowbite/plugin");
+const    preline = require("preline/plugin");
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    './node_modules/preline/preline.js',
+    "./node_modules/tw-elements-react/dist/js/**/*.js",
+    "node_modules/flowbite-react/lib/esm/**/*.js",
+    "path-to-your-node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
+    "path-to-your-node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
   },
-  plugins: [daisyui],
+  darkMode: "class",
+  plugins: [twElementsReactPlugin, daisyui, flowbite,preline],
   daisyui: {
     themes: [
       {
         light: {
-          ...require("daisyui/src/theming/themes")["light"],
-          "base-100" : "rgb(234, 225, 225)",
-          "base-200" :"#FFFFFF",
-          "base-300" :"rgb(222, 222, 222)",
-          primary: "#633cff",
-          "primary-focus":"#fff",
-          "primary-content":"#FFFFFF",
-          neutral:"#737373",
-   
+          // Vos thèmes clairs personnalisés ici
         },
       },
-      "dark"
+      "dark",
     ],
   },
-}
-
+};

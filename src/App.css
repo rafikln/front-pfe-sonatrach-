@@ -1,5 +1,7 @@
-m
+*
 {
-    color: rgb(222, 222, 222);
-    background: url();
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
 }
