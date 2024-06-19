@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
-const Selector = ({ agents, rdv, setRdv }) => {
+const Selector = ({ agents, rdv, setRdv ,selected,setSelected}) => {
   const [inputValue, setInputValue] = useState("");
-  const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
-
-
-
-
   return (
     <div className="w-full font-medium ">
       <div
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between rounded bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-          !selected && "text-gray-700"
-        }`}
+        className={`w-full flex items-center justify-between rounded bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${!selected ? "text-gray-700" : ""}`}
       >
         {selected ? (
           selected?.length > 25 ? (
@@ -29,7 +23,7 @@ const Selector = ({ agents, rdv, setRdv }) => {
       <ul
         className={`bg-white mt-3 flex flex-col gap-3 overflow-y-auto ${
           open ? "max-h-40" : "max-h-0"
-        } `}
+        }`}
       >
         <div className="flex items-center px-3 sticky top-0 bg-white">
           <input
@@ -49,18 +43,21 @@ const Selector = ({ agents, rdv, setRdv }) => {
           .map((agent) => (
             <li
               key={agent.IdA}
-              className="w-full flex gap-1 cursor-pointer hover:bg-gray-400 p-2  hover:text-white"
+              className="w-full flex gap-1 cursor-pointer hover:bg-gray-400 p-2 hover:text-white"
               onClick={() => {
                 setSelected(agent.Nom + " " + agent.Prenom);
                 setOpen(false);
                 let data = { ...rdv };
                 data.IdA = agent.IdA;
+                data.Nom = agent.Nom;
+                data.Prenom = agent.Prenom;
+                data.Email = agent.Email;
                 setRdv(data);
               }}
             >
               <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3">
                 <div className="rounded-full w-[40px] h-[40px] text-[20px] flex justify-center items-center bg-gray-300">
-                  <h1 className="text-gray-50">RL</h1>
+                  <h1 className="text-gray-50">{agent.Nom[0].toUpperCase()}{agent.Prenom[0].toUpperCase()}</h1>
                 </div>
               </div>
               <div>
@@ -72,7 +69,6 @@ const Selector = ({ agents, rdv, setRdv }) => {
             </li>
           ))}
       </ul>
-    
     </div>
   );
 };

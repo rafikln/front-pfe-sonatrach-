@@ -1,50 +1,156 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
-function Page1({ agent, setAgent }) {
-  const [jour, setJour] = useState("xx");
-  const [mois, setMois] = useState("xx");
-  const [annee, setAnnee] = useState("xxxx");
-  // pour la date de naissance
+function Page1({ agent, setAgent, update, setUpdate, Page,poste,setPoste,jour,setJour,mois,setMois,annee,setAnnee }) {
+
+  const handleAddPoste = () => {
+    let data = [...poste];
+    data.push({
+      Poste: "",
+      DateD: "",
+      DateF: "",
+      RisqueProfess: "",
+      Motifs: "",
+    });
+    setPoste(data);
+  };
+
+  const handleInputChange = (index, field, value) => {
+    let data = [...poste];
+    data[index][field] = value;
+    setPoste(data);
+  };
+
+  const handleRemovePoste = (index) => {
+    setPoste((prevPoste) => prevPoste.filter((_, i) => i !== index));
+  };
+ 
+  // pour la date de Naissance
   useEffect(() => {
     let data = { ...agent };
     data.DateN = annee + "-" + mois + "-" + jour;
     setAgent(data);
     console.log(agent.DateN);
   }, [jour, mois, annee]);
-  //
+
   return (
     <>
-      <div className="w-full  ">
+      <div className="w-full   ">
         <div className="w-full  pl-5 pr-5 pt-3 ">
           <div className="w-full h-6 mt-5 ">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
-
-                try {
-                  console.log(JSON.stringify(agent));
-                  const response = await fetch(
-                    "http://localhost:3002/api/ajouter",
-                    {
-                      method: "POST",
-                      headers: {
-                        "content-type": "application/json",
-                      },
-                      body: JSON.stringify(agent),
+                if (!update) {
+                  try {
+                    const response = await fetch(
+                      "http://localhost:3005/api/ajouter",
+                      {
+                        method: "POST",
+                        headers: {
+                          "content-type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          agente: { ...agent },
+                          postes: [...poste],
+                        }),
+                      }
+                    );
+                    const data = await response.json();
+                    if (!response.ok) {
+                      console.log(data);
+                      toast.error(data.message);
+                    } else {
+                      toast.success(data.message);
+                      setAgent({
+                        IdA: "",
+                        Division: "",
+                        Direction: "",
+                        Unite: "",
+                        Service: "",
+                        Atelier: "",
+                        Nom: "",
+                        Prenom: "",
+                        DateN: "",
+                        LieuN: "",
+                        Sex: "",
+                        Email: "",
+                        SitutionFamille: "",
+                        Adreese: "",
+                        GroupeSanguim: "",
+                        Allergie: "",
+                        Nss: "",
+                        Scolaire: "",
+                        Professionnelle: "",
+                        Qprofessionnelle: "",
+                        ActiProAntet: "",
+                        ServiceNational: "",
+                      });
+                      setPoste([]);
+                      setJour("");
+                      setMois("");
+                      setAnnee("");
                     }
-                  );
-                  const data = await response.json();
-                  if (!response.ok) {
-                    console.log(data);
-                    toast.error(data.message);
-                  } else {
-                    toast.success(data.message);
+                  } catch (error) {
+                    console.error("Une erreur s'est produite :", error);
                   }
-                } catch (error) {
-                  console.error("Une erreur s'est produite :", error);
+                } else {
+                  try {
+                    const response = await fetch(
+                      "http://localhost:3005/api/modifagent",
+                      {
+                        method: "PUT",
+                        headers: {
+                          "content-type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          agent: { ...agent },
+                          postes: [...poste],
+                        }),
+                      }
+                    );
+                    const data = await response.json();
+                    if (!response.ok) {
+                      console.log(data);
+                      toast.error(data.message);
+                    } else {
+                      toast.success(data.message);
+                      setAgent({
+                        IdA: "",
+                        Division: "",
+                        Direction: "",
+                        Unite: "",
+                        Service: "",
+                        Atelier: "",
+                        Nom: "",
+                        Prenom: "",
+                        DateN: "",
+                        LieuN: "",
+                        Sex: "",
+                        Email: "",
+                        SitutionFamille: "",
+                        Adreese: "",
+                        GroupeSanguim: "",
+                        Allergie: "",
+                        Nss: "",
+                        Scolaire: "",
+                        Professionnelle: "",
+                        Qprofessionnelle: "",
+                        ActiProAntet: "",
+                        ServiceNational: "",
+                      });
+                      setPoste([]);
+                      setJour("");
+                      setMois("");
+                      setAnnee("");
+                      setUpdate(false)
+                      Page(2)
+                    }
+                  } catch (error) {
+                    console.error("Une erreur s'est produite :", error);
+                  }
                 }
               }}
             >
@@ -59,6 +165,7 @@ function Page1({ agent, setAgent }) {
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="John"
                       required
+                      value={agent.Nom}
                       onChange={(e) => {
                         let data = { ...agent };
                         data.Nom = e.target.value;
@@ -74,10 +181,28 @@ function Page1({ agent, setAgent }) {
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Doe"
+                      value={agent.Prenom}
                       required
                       onChange={(e) => {
                         let data = { ...agent };
                         data.Prenom = e.target.value;
+                        setAgent(data);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Email
+                    </label>
+                    <input
+                      type="text"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="nom@mail.com"
+                      value={agent.Email}
+                      required
+                      onChange={(e) => {
+                        let data = { ...agent };
+                        data.Email = e.target.value;
                         setAgent(data);
                       }}
                     />
@@ -89,6 +214,7 @@ function Page1({ agent, setAgent }) {
 
                     <select
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      value={agent.Sex}
                       onChange={(e) => {
                         let data = { ...agent };
                         data.Sex = e.target.value;
@@ -109,6 +235,7 @@ function Page1({ agent, setAgent }) {
                         type="tel"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[80%] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Année"
+                        value={annee}
                         required
                         onChange={(e) => {
                           setAnnee(e.target.value);
@@ -118,6 +245,7 @@ function Page1({ agent, setAgent }) {
                         type="tel"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[80%] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="mois"
+                        value={mois}
                         required
                         onChange={(e) => {
                           setMois(e.target.value);
@@ -127,6 +255,7 @@ function Page1({ agent, setAgent }) {
                         type="tel"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[80%] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Jour"
+                        value={jour}
                         required
                         onChange={(e) => {
                           setJour(e.target.value);
@@ -136,6 +265,7 @@ function Page1({ agent, setAgent }) {
                         type="text"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[80%] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="à"
+                        value={agent.LieuN}
                         required
                         onChange={(e) => {
                           let data = { ...agent };
@@ -146,11 +276,10 @@ function Page1({ agent, setAgent }) {
                     </div>
                   </div>
                   <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                      Situation de famille
-                    </label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                     <select
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      value={agent.SitutionFamille}
                       onChange={(e) => {
                         let data = { ...agent };
                         data.SitutionFamille = e.target.value;
@@ -171,6 +300,7 @@ function Page1({ agent, setAgent }) {
                     </label>
                     <input
                       type="text"
+                      value={agent.Adreese}
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Entrez  adresse"
                       onChange={(e) => {
@@ -186,6 +316,7 @@ function Page1({ agent, setAgent }) {
                       Groupe sanguin
                     </label>
                     <select
+                      value={agent.GroupeSanguim}
                       onChange={(e) => {
                         let data = { ...agent };
                         data.GroupeSanguim = e.target.value;
@@ -211,6 +342,7 @@ function Page1({ agent, setAgent }) {
                       Allergie
                     </label>
                     <textarea
+                      value={agent.Allergie}
                       rows="10"
                       class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Description ..."
@@ -228,6 +360,7 @@ function Page1({ agent, setAgent }) {
                     </label>
                     <input
                       type="text"
+                      value={agent.Nss}
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="EX:123353442"
                       required
@@ -244,6 +377,7 @@ function Page1({ agent, setAgent }) {
                       Division
                     </label>
                     <input
+                      value={agent.Division}
                       type="text"
                       placeholder="Entrez  ..."
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -261,6 +395,7 @@ function Page1({ agent, setAgent }) {
                       Direction
                     </label>
                     <input
+                      value={agent.Direction}
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       required
@@ -277,6 +412,7 @@ function Page1({ agent, setAgent }) {
                       Unite
                     </label>
                     <input
+                      value={agent.Unite}
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Entrez  ..."
@@ -294,6 +430,7 @@ function Page1({ agent, setAgent }) {
                       Service
                     </label>
                     <input
+                      value={agent.Service}
                       type="text"
                       placeholder="Entrez  ..."
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -310,6 +447,7 @@ function Page1({ agent, setAgent }) {
                       Atelier
                     </label>
                     <input
+                      value={agent.Atelier}
                       type="text"
                       placeholder="Entrez  ..."
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -329,6 +467,7 @@ function Page1({ agent, setAgent }) {
                       Scolaire
                     </label>
                     <input
+                      value={agent.Scolaire}
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Entrez  ..."
@@ -348,6 +487,7 @@ function Page1({ agent, setAgent }) {
                       Professionnelle
                     </label>
                     <input
+                      value={agent.Professionnelle}
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Entrez  ..."
@@ -364,6 +504,7 @@ function Page1({ agent, setAgent }) {
                       Qualification Professionnelle
                     </label>
                     <input
+                      value={agent.Qprofessionnelle}
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Entrez  ..."
@@ -380,6 +521,7 @@ function Page1({ agent, setAgent }) {
                       Activités Professionnelle antérieures
                     </label>
                     <input
+                      value={agent.ActiProAntet}
                       type="text"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Entrez  ..."
@@ -396,6 +538,7 @@ function Page1({ agent, setAgent }) {
                       Service National
                     </label>
                     <select
+                      value={agent.ServiceNational}
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(e) => {
                         let data = { ...agent };
@@ -404,9 +547,7 @@ function Page1({ agent, setAgent }) {
                         console.log(agent);
                       }}
                     >
-                      <option selected disabled>
-                        Selection service
-                      </option>
+                      <option selected>Selection service</option>
                       <option value="accompli">Accompli</option>
                       <option value="dispensé">Dispensé</option>
                       <option value="inapte">Inapte</option>
@@ -416,29 +557,125 @@ function Page1({ agent, setAgent }) {
                 <label htmlFor=""></label>
                 <button
                   type="button"
-                  onClick={() => {}}
-                  class="text-blue-700 w-full hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                  onClick={handleAddPoste}
+                  className="text-blue-700 w-full hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                 >
                   Ajoutez Poste
                 </button>
-                <div className="w-[100%]  p-4 flex flex-col gap-4">
-                  <div className="w-full h-[150px] bg-gray-100 rounded-md">
-                    <div className="w-full  h-6 p-2  flex justify-end ">
-                      <div class="bg-red-500 w-8 h-5 text-[13px] hover:bg-red-700 text-white font-bold py-2 px-2 rounded flex items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 30 30"
-                          width="17px"
-                          height="17px"
+                <div className="w-[100%] p-4 flex flex-col gap-4">
+                  {poste.map((e, index) => (
+                    <div
+                      key={index}
+                      className="w-full h-[220px] pl-4 pr-4 bg-gray-50 rounded-lg shadow dark:bg-gray-700"
+                    >
+                      <div className="w-full h-6 p-2 flex justify-end">
+                        <div
+                          className="bg-red-500 w-8 h-5 text-[13px] hover:bg-red-700 text-white font-bold py-2 px-2 rounded flex items-center"
+                          onClick={() => handleRemovePoste(index)}
                         >
-                          <path
-                            d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z"
-                            fill="#ffffff"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 30 30"
+                            width="17px"
+                            height="17px"
+                          >
+                            <path
+                              d="M14.984375 2.4863281A1.0001 1.0001 0 0 0 14 3.5L14 4L8.5 4A1.0001 1.0001 0 0 0 7.4863281 5L6 5A1.0001 1.0001 0 1 0 6 7L24 7A1.0001 1.0001 0 1 0 24 5L22.513672 5A1.0001 1.0001 0 0 0 21.5 4L16 4L16 3.5A1.0001 1.0001 0 0 0 14.984375 2.4863281zM6 9L7.7929688 24.234375C7.9109687 25.241375 8.7633438 26 9.7773438 26L20.222656 26C21.236656 26 22.088031 25.241375 22.207031 24.234375L24 9L6 9z"
+                              fill="#ffffff"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="w-full p-2 flex justify-between">
+                        <div className="w-[40%]">
+                          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Poste occupés chez l'employeur actuel
+                          </label>
+                          <input
+                            value={e.Poste}
+                            type="text"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Entrez ..."
+                            required
+                            onChange={(v) =>
+                              handleInputChange(index, "Poste", v.target.value)
+                            }
                           />
-                        </svg>
+                        </div>
+                        <div className="w-[40%]">
+                          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Date
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              value={e.DateD}
+                              type="text"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Du ..."
+                              required
+                              onChange={(v) =>
+                                handleInputChange(
+                                  index,
+                                  "DateD",
+                                  v.target.value
+                                )
+                              }
+                            />
+                            <input
+                              value={e.DateF}
+                              type="text"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Au ..."
+                              required
+                              onChange={(v) =>
+                                handleInputChange(
+                                  index,
+                                  "DateF",
+                                  v.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-full p-2 flex justify-between">
+                        <div className="w-[40%]">
+                          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Risque professionnelle
+                          </label>
+                          <input
+                            value={e.RisqueProfess}
+                            type="text"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Entrez ..."
+                            required
+                            onChange={(v) =>
+                              handleInputChange(
+                                index,
+                                "RisqueProfess",
+                                v.target.value
+                              )
+                            }
+                          />
+                        </div>
+                        <div className="w-[40%]">
+                          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Motifs changement de poste
+                          </label>
+                          <input
+                            value={e.Motifs}
+                            type="text"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Entrez ..."
+                            required
+                            onChange={(v) =>
+                              handleInputChange(index, "Motifs", v.target.value)
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
@@ -447,8 +684,51 @@ function Page1({ agent, setAgent }) {
                   type="submit"
                   class="text-white  bg-blue-700 hover:bg-blue-800 absolute right-3 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
-                  Ajouter
+                  {update ? "Update" : "Ajouter"}
                 </button>
+                {update ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAgent({
+                          IdA: "",
+                          Division: "",
+                          Direction: "",
+                          Unite: "",
+                          Service: "",
+                          Atelier: "",
+                          Nom: "",
+                          Prenom: "",
+                          DateN: "",
+                          LieuN: "",
+                          Sex: "",
+                          Email: "",
+                          SitutionFamille: "",
+                          Adreese: "",
+                          GroupeSanguim: "",
+                          Allergie: "",
+                          Nss: "",
+                          Scolaire: "",
+                          Professionnelle: "",
+                          Qprofessionnelle: "",
+                          ActiProAntet: "",
+                          ServiceNational: "",
+                        });
+                        setPoste([]);
+                        setJour("");
+                        setMois("");
+                        setAnnee("");
+                        Page(2);
+                      }}
+                      class="text-white  bg-red-700 hover:bg-red-800 absolute left-3 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    >
+                      Annuler
+                    </button>
+                  </>
+                ) : (
+                  ""
+                )}
               </div>
             </form>
           </div>

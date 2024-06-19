@@ -5,3 +5,10 @@
     box-sizing: border-box;
     
 }
+#clip {
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0% 100%);
+}
+#no
+{
+    display: none;
+}

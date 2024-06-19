@@ -2,34 +2,31 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Route, Routes ,useNavigate } from "react-router-dom";
 import Login from "./Page/login";
-import Poste2 from "./Page/poste2";
-import Test from "./Page/Test.jsx";
-import logo from "./img/logo_sonatrach.svg"
+import Poste2 from "./Page/p-page2/poste2.jsx";
+import Admin from './Page/Administarateur/adm.jsx'; // Corrected path
+import Logo from "./Page/logo.jsx"
 import toast, { Toaster } from "react-hot-toast";
 function App() {
   const navigate = useNavigate();
-  const [user,setUser] =useState({
-    nom : "user",
-    prenom : " " ,
-    mail : "",
-    poste : "",
-    id :"212131"
+  const [USER,setUSER] =useState({
+    IdE:"",
+    Nom : "",
+    Prenom : " " ,
+    Poste : "",
+    Token :"",
+    Exp:""
 
   })
+
   return (
     <>
    
       <Routes>
-      <Route path="/" element={
-         <div className="w-full h-[100vh] flex justify-center">
-         <img src={logo} alt="" className="w-[250px]"/>
-     
-         </div>
-      } />
+      <Route path="/" element={<Logo />} />
 
-      <Route path="/login" element={<Login  setUser={setUser} />} />
-        <Route path="/poste=2/:id" element={<Poste2 user={user} />} />
-        <Route path="/test" element={<Test  />} />
+      <Route path="/login" element={<Login  setUSER={setUSER}   USER={USER} />} />
+      <Route path="/admin/:token" element={<Admin   setUSER={setUSER}   USER={USER}  />} />
+        <Route path="/poste=2/:token" element={<Poste2 USER={USER} />} />
         <Route path="*" element={
           <section class="bg-white dark:bg-gray-900 ">
     <div class="container min-h-screen px-6 py-12 mx-auto lg:flex lg:items-center lg:gap-12">
