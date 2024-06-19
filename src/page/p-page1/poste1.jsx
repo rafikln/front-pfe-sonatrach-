@@ -1,5 +1,5 @@
 import React from "react";
-import { TypewriterEffect } from "../../../node_modules/framer-motion/dist/es/components/ui/typewriter-effect";
+import { TypewriterEffect } from "../../../node_modules/framer-motion/dist/es/components/ui/typewriter-effect.js";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Page1 from "../p-page2/page1.jsx";

@@ -1,10 +1,10 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Route, Routes ,useNavigate } from "react-router-dom";
-import Login from "./Page/login";
-import Poste2 from "./Page/p-page2/poste2.jsx";
-import Admin from './Page/Administarateur/adm.jsx'; // Corrected path
-import Logo from "./Page/logo.jsx"
+import Login from "./Page/login.jsx";
+import Poste2 from "./page/p-page2/poste2.jsx";
+import Admin from './page/Administarateur/adm.jsx'; // Corrected path
+import Logo from "./page/logo.jsx"
 import toast, { Toaster } from "react-hot-toast";
 function App() {
   const navigate = useNavigate();
